@@ -31,7 +31,7 @@ module.exports = {
       accounts: { mnemonic: mnemonic },
     },
     testnet: {
-      url: "https://rpc-mumbai.maticvigil.com",
+      url: "https://polygon-mumbai.g.alchemy.com/v2/B7DFu0l6g4-PWRX7KWEk11Tx70w11gwd",
       accounts: { mnemonic: mnemonic },
     },
   },
