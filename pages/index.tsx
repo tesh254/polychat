@@ -1,7 +1,7 @@
 import getConfig from "next/config";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import abi from "../utils/Sole.json";
+import abi from "../contracts/artifacts/contracts/Sole.sol/Sole.json";
 
 import Layout from "@/components/Layout";
 

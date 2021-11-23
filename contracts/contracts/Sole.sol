@@ -6,6 +6,8 @@ import "hardhat/console.sol";
 contract Sole {
     uint256 totalWagers;
 
+    event NewWager(address indexed from, uint64 timestamp, string wager, string outcome, uint256 amount);
+
     constructor() {
         console.log("This is the Sole contract");
     }
