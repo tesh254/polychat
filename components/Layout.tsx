@@ -1,3 +1,4 @@
+import { AppProvider } from "context/AppProvider";
 import getConfig from "next/config";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -79,7 +80,9 @@ const Layout = ({ children, ...customMeta }: LayoutProps) => {
         )}
         <title key="title">{meta.title}</title>
       </Head>
-      <main>{children}</main>
+      <main className="bg-black">
+        {children}
+      </main>
     </>
   );
 };

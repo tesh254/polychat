@@ -7,20 +7,12 @@ const hre = require("hardhat");
 
 async function main() {
   const [owner, randomPerson] = await hre.ethers.getSigners();
-  const soleContractFactory = await hre.ethers.getContractFactory("Sole");
-  const soleContract = await soleContractFactory.deploy();
-  await soleContract.deployed();
+  const hsmContractFactory = await hre.ethers.getContractFactory("Polychat");
+  const hsmContract = await hsmContractFactory.deploy();
+  await hsmContract.deployed();
 
-  console.log("Contract deployed to: ", soleContract.address);
+  console.log("Contract deployed to: ", hsmContract.address);
   console.log("Contract deployed by: ", owner.address);
-
-  let wageCount;
-  wageCount = await soleContract.getTotalWages();
-
-  const wageTxn = await soleContract.wage();
-  await wageTxn.wait();
-
-  wageCount = await soleContract.getTotalWages();
 }
 
 // We recommend this pattern to be able to use async/await everywhere
