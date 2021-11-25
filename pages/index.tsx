@@ -1,8 +1,3 @@
-import getConfig from "next/config";
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import abi from "../contracts/artifacts/contracts/Polychat.sol/Polychat.json";
-
 import Layout from "@/components/Layout";
 import {
   ChatWindow,
@@ -15,11 +10,10 @@ import {
 import InfoSection from "@/components/Info";
 import Leaderboard from "@/components/Leaderboard";
 import { useAppContext } from "context/AppProvider";
+import { css } from "goober";
 
 const Home = () => {
   const { setMessage, message, account, connectWallet } = useAppContext();
-
-  console.log(account);
 
   return (
     <Layout>
@@ -40,7 +34,15 @@ const Home = () => {
                   Connect Wallet
                 </button>
               ) : (
-                <section className="bg-white flex">
+                <section
+                  className={`bg-white rounded-2xl ${css`
+                    display: grid;
+                    grid-template-columns: 1fr auto;
+                    grid-template-rows: 100%;
+                    grid-column-gap: 8px;
+                    grid-row-gap: 0px;
+                  `}`}
+                >
                   <textarea
                     value={message}
                     onChange={(e) => {
@@ -48,9 +50,13 @@ const Home = () => {
 
                       setMessage(value);
                     }}
-                    cols={10}
-                    rows={10}
+                    className="p-2 outline-none italic"
+                    // cols={10}
+                    // rows={10}
                   ></textarea>
+                  <button className="bg-green-400 h-auto px-3 text-white">
+                    Send
+                  </button>
                 </section>
               )}
             </InputSection>

@@ -67,29 +67,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [account]);
 
-  function checkIfWalletIsConnected() {
-    try {
-      const { ethereum }: any = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have metamask");
-        return;
-      } else {
-        console.log("We have the ethereum object", ethereum);
-      }
-
-      const accounts = ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        connectWallet();
-      } else {
-        console.log("No authorized account found");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   const connectWallet = async () => {
     console.log("called");
     try {
@@ -161,6 +138,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setMessage(message);
     }
   }
+
+  useEffect(() => {
+    if (web3) {
+      web3.eth.net.getNetworkType().then(async (netId) => {
+        console.log({ netId });
+      });
+    }
+  }, [web3]);
 
   return (
     <AppContext.Provider
