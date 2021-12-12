@@ -13,7 +13,9 @@ import { useAppContext } from "context/AppProvider";
 import { css } from "goober";
 
 const Home = () => {
-  const { setMessage, message, account, connectWallet } = useAppContext();
+  const { account, connectWallet, balance } = useAppContext();
+
+  console.log({ balance });
 
   return (
     <Layout>
@@ -28,7 +30,7 @@ const Home = () => {
             <InputSection>
               {!account ? (
                 <button
-                  onClick={() => connectWallet().then(() => {})}
+                  onClick={() => connectWallet()}
                   className="w-full text-2xl outline-none text-white bg-green-400 font-extrabold rounded-xl p-2 h-full"
                 >
                   Connect Wallet
@@ -44,15 +46,13 @@ const Home = () => {
                   `}`}
                 >
                   <textarea
-                    value={message}
+                    value={""}
                     onChange={(e) => {
                       const value = e.target.value;
 
-                      setMessage(value);
+                      // setMessage(value);
                     }}
                     className="p-2 outline-none italic"
-                    // cols={10}
-                    // rows={10}
                   ></textarea>
                   <button className="bg-green-400 h-auto px-3 text-white">
                     Send
