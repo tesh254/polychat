@@ -39,8 +39,6 @@ export const getChainData = (chainId: number, ethereum?: any) => {
     if (!chainData) {
         const preferedChain = supportedChains.find((chain: any) => chain.network === env);
 
-        console.log(decToHex(preferedChain.chain_id))
-
         ethereum.request({
             method: "wallet_addEthereumChain",
             params: [{

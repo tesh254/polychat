@@ -17,15 +17,29 @@ const AppContext = createContext<{
   account: any;
   connectWallet: () => void;
   disconnectWallet: () => void;
-  balance?: number;
+  message: string;
+  setMessage: (message: string) => void;
+  onSend: () => void;
 }>({
   account: null,
   connectWallet: () => {},
   disconnectWallet: () => {},
-  balance: null,
+  message: "",
+  setMessage: () => {},
+  onSend: () => {},
 });
 
-const providerOptions = {};
+const providerOptions: any = {
+  connector: async (_, options) => {
+    const { appName, networkUrl, chainId } = options;
+    const walletLink = new WalletLink({
+      appName,
+    });
+    const provider = walletLink.makeWeb3Provider(networkUrl, chainId);
+    await provider.enable();
+    return provider;
+  },
+};
 
 let web3Modal;
 
@@ -114,28 +128,63 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   const { provider, web3Provider, address, chainId } = state;
+  const [message, setMessage] = useState<string>("");
+  const [user, setUser] = useState<{
+    username?: string;
+    link?: string;
+  }>({
+    username: "",
+    link: "",
+  });
+
+  function onSend() {}
 
   const connect = useCallback(async () => {
-    const provider = await web3Modal.connect();
+    try {
+      const provider = await web3Modal.connect();
 
-    const web3Provider = new providers.Web3Provider(provider);
+      const web3Provider = new providers.Web3Provider(provider);
 
-    const signer = web3Provider.getSigner();
+      const signer = web3Provider.getSigner();
 
-    const address = await signer.getAddress();
+      const address = await signer.getAddress();
 
-    const network = await web3Provider.getNetwork();
+      const network = await web3Provider.getNetwork();
 
-    dispatch({
-      type: "SET_WEB3_PROVIDER",
-      provider,
-      web3Provider,
-      address,
-      chainId: network.chainId,
-    });
+      dispatch({
+        type: "SET_WEB3_PROVIDER",
+        provider,
+        web3Provider,
+        address,
+        chainId: network.chainId,
+      });
 
+      // ethersProviderConnection();
+    } catch (error) {
+      console.log({
+        error: `Error connecting wallet: ${error.message}`,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    addNetwork();
+    const interval = setInterval(() => {
+      addNetwork();
+      // ethersProviderConnection();
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  function ethersProviderConnection() {
     const _provider = ethers.getDefaultProvider(
-      process.env.NEXT_PUBLIC_APP_ENV
+      process.env.NEXT_PUBLIC_APP_ENV,
+      {
+        alchemy: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+      }
     );
 
     _provider.getBalance(address).then((balance) => {
@@ -146,7 +195,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         accountBalance: balanceInEther,
       });
     });
-  }, []);
+  }
 
   const disconnect = useCallback(
     async function () {
@@ -162,16 +211,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const chainData = getChainData(chainId, window.ethereum);
-    }
-    if (web3Modal.cachedProvider) {
+    if (web3Modal?.cachedProvider) {
       connect();
     }
   }, [connect]);
 
+  function addNetwork() {
+    if (typeof window !== "undefined") {
+      getChainData(chainId, window.ethereum);
+    }
+  }
+
   useEffect(() => {
-    console.log(provider)
     if (provider?.on) {
       const handleAccountsChanged = (accounts: string[]) => {
         dispatch({
@@ -181,7 +232,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       };
 
       const handleChainChanged = (_hexChainId: string) => {
-        console.log({ _hexChainId });
         if (typeof window !== "undefined") {
           getChainData(parseInt(_hexChainId, 16), window.ethereum);
         }
@@ -220,7 +270,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         connectWallet: connect,
         disconnectWallet: disconnect,
         account: state.address,
-        balance: state.accountBalance,
+        onSend,
+        message,
+        setMessage,
       }}
     >
       {children}
